@@ -188,6 +188,7 @@ class BackdropScaffold extends StatefulWidget {
   final double frontLayerActiveFactor;
 
   /// Scrim over [frontLayer] when minimized (back layer revealed) and animating.
+  /// Only shown when [keepFrontLayerActive] is false.
   ///
   /// Defaults to [Colors.white70].
   ///
@@ -201,6 +202,11 @@ class BackdropScaffold extends StatefulWidget {
   ///
   /// Defaults to [Colors.black54].
   final Color backLayerScrim;
+
+  /// Whether to keep [frontLayer] active when [backLayer] is revealed.
+  /// When true and revealing [backLayer], [frontLayerScrim] is not shown and interaction with [frontLayer] is possible.
+  /// Note that this goes against the Material Design Guidelines: https://m2.material.io/components/backdrop#behavior.
+  final bool keepFrontLayerActive;
 
   /// Will be called when [backLayer] has been concealed.
   final VoidCallback? onBackLayerConcealed;
@@ -328,6 +334,7 @@ class BackdropScaffold extends StatefulWidget {
     this.backLayerBackgroundColor,
     this.frontLayerScrim = Colors.white70,
     this.backLayerScrim = Colors.black54,
+    this.keepFrontLayerActive = false,
     this.onBackLayerConcealed,
     this.onBackLayerRevealed,
     this.maintainBackLayerState = true,
@@ -585,7 +592,7 @@ class BackdropScaffoldState extends State<BackdropScaffold>
                   onChange: (size) =>
                       setState(() => _subHeaderHeight = size.height),
                   child: DefaultTextStyle(
-                    style: Theme.of(context).textTheme.subtitle1!,
+                    style: Theme.of(context).textTheme.titleMedium!,
                     child: widget.subHeader ?? Container(),
                   ),
                 ),
@@ -593,7 +600,7 @@ class BackdropScaffoldState extends State<BackdropScaffold>
                 Flexible(child: widget.frontLayer),
               ],
             ),
-            _buildInactiveLayer(context),
+            if (!widget.keepFrontLayerActive) _buildInactiveLayer(context),
           ],
         ),
       ),
